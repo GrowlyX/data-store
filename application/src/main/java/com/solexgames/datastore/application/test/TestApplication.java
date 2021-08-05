@@ -53,6 +53,7 @@ public class TestApplication implements DataStorePlatform {
 
             if (command != null) {
                 final String[] commandArgs = command.split(" ");
+                final long startTime = System.currentTimeMillis();
 
                 switch (commandArgs[0]) {
                     case "save":
@@ -61,6 +62,8 @@ public class TestApplication implements DataStorePlatform {
 
                             application.getLayer().saveEntry(commandArgs[1], testObject).whenComplete((unused, throwable) -> {
                                 System.out.println("saved entry!");
+
+                                System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to run this jedis command.");
                             });
                         } else {
                             System.out.println("no");
@@ -70,10 +73,12 @@ public class TestApplication implements DataStorePlatform {
                         if (commandArgs.length == 2) {
                             application.getLayer().fetchEntryByKey(commandArgs[1]).whenComplete((testObject1, throwable) -> {
                                 if (testObject1 != null) {
-                                    System.out.println("fetched entry! " + testObject1);
+                                    System.out.println("fetched entry! result: " + testObject1.getTest());
                                 } else {
                                     System.out.println("I couldn't find that entry!");
                                 }
+
+                                System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to run this jedis command.");
                             });
                         } else {
                             System.out.println("no");
@@ -90,6 +95,8 @@ public class TestApplication implements DataStorePlatform {
                                     System.out.println(atomicInteger.incrementAndGet() + ". " + s + " - " + testObject1.getTest());
                                 });
                             }
+
+                            System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to run this jedis command.");
                         });
                         break;
                 }
@@ -99,16 +106,16 @@ public class TestApplication implements DataStorePlatform {
 
     private void initialize() {
         final RedisStorageBuilder<TestObject> testClassRedisStorageBuilder = new RedisStorageBuilder<>();
+        final JedisSettings jedisSettings = new JedisSettings(
+                "127.0.0.1", 6379,
+                false, ""
+        );
 
         this.layer = testClassRedisStorageBuilder
                 .setSection("datastore_test")
                 .setTClass(TestObject.class)
-                .setJedisSettings(new JedisSettings(
-                        "panel.clox.us",
-                        6379,
-                        false,
-                        ""
-                )).build();
+                .setJedisSettings(jedisSettings)
+                .build();
 
         this.getLogger().info("Initialized redis storage layer, now waiting for commands...");
     }
