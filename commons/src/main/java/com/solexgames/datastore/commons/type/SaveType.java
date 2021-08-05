@@ -7,8 +7,8 @@ package com.solexgames.datastore.commons.type;
 
 public enum SaveType {
 
-    MONGO,
-    REDIS,
+
+    // TODO: 8/5/2021 redo this completely (don't use enums as users should be able to add multiple data sources and types)
 
     ALL
 

@@ -7,8 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="proxy" />
-        <module name="bukkit" />
         <module name="commons" />
+        <module name="bukkit" />
       </profile>
     </annotationProcessing>
   </component>

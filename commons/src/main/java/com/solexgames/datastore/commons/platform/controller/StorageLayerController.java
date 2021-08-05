@@ -11,10 +11,6 @@ import java.util.Map;
 
 public interface StorageLayerController {
 
-    Map<Class<?>, Object> getStorageLayers();
-
-    <T> T getStorageLayer(Class<? extends T> clazz);
-
-    void registerStorageLayer(AbstractStorageLayer<?, ?> abstractStorageLayer);
-
+    // TODO: 8/5/2021 redo this completely 
+    
 }
