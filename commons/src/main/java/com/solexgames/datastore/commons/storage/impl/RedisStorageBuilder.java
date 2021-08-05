@@ -4,7 +4,8 @@ import com.google.common.base.Preconditions;
 import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
 import com.solexgames.datastore.commons.settings.JedisSettings;
 import com.solexgames.datastore.commons.storage.StorageBuilder;
-import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -12,28 +13,14 @@ import redis.clients.jedis.JedisPool;
  * @since 8/4/2021
  */
 
-@Getter
+@Setter
+@Accessors(chain = true)
 public class RedisStorageBuilder<T> implements StorageBuilder<RedisStorageLayer<T>> {
 
     private JedisSettings jedisSettings;
 
     private Class<T> tClass;
     private String section;
-
-    public RedisStorageBuilder<T> setSettings(JedisSettings jedisSettings) {
-        this.jedisSettings = jedisSettings;
-        return this;
-    }
-
-    public RedisStorageBuilder<T> setClass(Class<T> tClass) {
-        this.tClass = tClass;
-        return this;
-    }
-
-    public RedisStorageBuilder<T> setSection(String section) {
-        this.section = section;
-        return this;
-    }
 
     @Override
     public RedisStorageLayer<T> build() {
