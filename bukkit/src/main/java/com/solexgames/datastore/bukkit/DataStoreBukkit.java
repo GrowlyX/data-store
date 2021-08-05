@@ -58,7 +58,14 @@ public final class DataStoreBukkit extends ExtendedJavaPlugin implements DataSto
             System.out.println("the save entry method was ran!");
         });
 
-        this.storageLayerController.registerStorageLayer(storageLayer);
+
+        storageLayer.deleteEntry("test").whenComplete((unused, throwable) -> {
+            if (throwable != null) {
+                throwable.printStackTrace();
+            }
+
+            System.out.println("the delete entry method was ran!");
+        });
     }
 
     @Override
