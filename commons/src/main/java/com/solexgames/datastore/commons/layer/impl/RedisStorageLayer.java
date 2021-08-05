@@ -1,5 +1,6 @@
 package com.solexgames.datastore.commons.layer.impl;
 
+import com.google.gson.reflect.TypeToken;
 import com.solexgames.datastore.commons.layer.AbstractStorageLayer;
 import com.solexgames.datastore.commons.serializable.impl.GsonSerializable;
 import com.solexgames.datastore.commons.settings.JedisSettings;
@@ -7,8 +8,11 @@ import lombok.Getter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -108,6 +112,11 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
             return reference.get();
         });
+    }
+
+    @Override
+    public Type getType() {
+        return new TypeToken<RedisStorageLayer<T>>(){}.getType();
     }
 
     public void runCommand(Consumer<Jedis> consumer) {

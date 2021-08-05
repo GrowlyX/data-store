@@ -1,10 +1,15 @@
 package com.solexgames.datastore.bukkit;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
+import com.solexgames.datastore.commons.platform.DataStorePlatform;
+import com.solexgames.datastore.commons.platform.DataStorePlatforms;
+import com.solexgames.datastore.commons.platform.controller.StorageLayerController;
 import com.solexgames.datastore.commons.settings.JedisSettings;
 import com.solexgames.datastore.commons.storage.impl.RedisStorageBuilder;
 import lombok.Getter;
-import org.bukkit.plugin.java.JavaPlugin;
+import me.lucko.helper.plugin.ExtendedJavaPlugin;
 
 /**
  * @author GrowlyX
@@ -12,14 +17,24 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 
 @Getter
-public final class DataStoreBukkit extends JavaPlugin {
+public final class DataStoreBukkit extends ExtendedJavaPlugin implements DataStorePlatform {
 
     @Getter
     private static DataStoreBukkit instance;
 
+    private final Gson gson = new GsonBuilder()
+            .serializeNulls()
+            .create();
+
+    private StorageLayerController storageLayerController;
+
     @Override
-    public void onEnable() {
+    public void enable() {
         instance = this;
+
+        DataStorePlatforms.setCurrent(this);
+
+//        this.storageLayerController = new BukkitStorageLayerController();
 
         this.test();
     }
@@ -33,8 +48,7 @@ public final class DataStoreBukkit extends JavaPlugin {
                         6379,
                         false,
                         ""
-                ))
-                .build();
+                )).build();
 
         storageLayer.saveEntry("test", this).whenComplete((unused, throwable) -> {
             if (throwable != null) {
@@ -43,10 +57,12 @@ public final class DataStoreBukkit extends JavaPlugin {
 
             System.out.println("the save entry method was ran!");
         });
+
+        this.storageLayerController.registerStorageLayer(storageLayer);
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
 
     }
 }
