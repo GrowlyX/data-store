@@ -1,8 +1,6 @@
 name: datastore-proxy
-version: ${project.version}
+version: ${git.commit.id.abbrev}
 main: com.solexgames.datastore.proxy.DataStoreProxy
 
 author: SolexGames
 website: https://solexgames.com
-
-depend: [ commonlibs-bukkit, Scandium ]

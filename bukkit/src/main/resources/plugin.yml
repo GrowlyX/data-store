@@ -1,8 +1,8 @@
 name: datastore-bukkit
-version: ${project.version}
+version: ${git.commit.id.abbrev}
 main: com.solexgames.datastore.bukkit.DataStoreBukkit
 
 author: SolexGames
 website: https://solexgames.com
 
-depend: [ commonlibs-bukkit, Scandium ]
+depend: [commonlibs-bukkit, Scandium]
