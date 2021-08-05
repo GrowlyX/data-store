@@ -1,0 +1,8 @@
+name: datastore-bukkit
+version: ${project.version}
+main: com.solexgames.datastore.bukkit.DataStoreBukkit
+
+author: SolexGames
+website: https://solexgames.com
+
+depend: [ commonlibs-bukkit, Scandium ]
