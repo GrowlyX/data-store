@@ -1,6 +1,8 @@
 package com.solexgames.datastore.commons.serializable.impl;
 
-import com.solexgames.datastore.commons.platform.DataStorePlatforms;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
 import com.solexgames.datastore.commons.serializable.Serializable;
 import lombok.RequiredArgsConstructor;
 
@@ -12,16 +14,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GsonSerializable<T> implements Serializable<T, String> {
 
+    public final Gson gson = new GsonBuilder()
+            .setLongSerializationPolicy(LongSerializationPolicy.STRING)
+            .setPrettyPrinting()
+            .create();
+
     private final Class<T> clazz;
 
     @Override
     public String serialize(T t) {
-        return DataStorePlatforms.current().getGson().toJson(t);
+        return this.gson.toJson(t);
     }
 
     @Override
     public T deserialize(String s) {
-        return DataStorePlatforms.current().getGson().fromJson(s, this.getClazz());
+        return this.gson.fromJson(s, this.getClazz());
     }
 
     @Override

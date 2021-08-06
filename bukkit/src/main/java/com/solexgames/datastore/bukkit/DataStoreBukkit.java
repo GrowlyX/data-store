@@ -1,7 +1,5 @@
 package com.solexgames.datastore.bukkit;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
 import com.solexgames.datastore.commons.platform.DataStorePlatform;
 import com.solexgames.datastore.commons.platform.DataStorePlatforms;
@@ -22,10 +20,6 @@ public final class DataStoreBukkit extends ExtendedJavaPlugin implements DataSto
     @Getter
     private static DataStoreBukkit instance;
 
-    private final Gson gson = new GsonBuilder()
-            .serializeNulls()
-            .create();
-
     private StorageLayerController storageLayerController;
 
     @Override
@@ -33,8 +27,6 @@ public final class DataStoreBukkit extends ExtendedJavaPlugin implements DataSto
         instance = this;
 
         DataStorePlatforms.setCurrent(this);
-
-//        this.storageLayerController = new BukkitStorageLayerController();
 
         this.test();
     }

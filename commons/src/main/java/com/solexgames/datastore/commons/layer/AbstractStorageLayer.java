@@ -1,5 +1,6 @@
 package com.solexgames.datastore.commons.layer;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +20,8 @@ public abstract class AbstractStorageLayer<K, V> {
 
     public abstract CompletableFuture<Map<K, V>> fetchAllEntries();
 
-    public abstract Type getType();
+    public abstract String getInternalId();
+
+    public abstract Class<V> getType();
 
 }

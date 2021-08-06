@@ -2,6 +2,7 @@ package com.solexgames.datastore.application.test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.solexgames.datastore.commons.layer.AbstractStorageLayer;
 import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
 import com.solexgames.datastore.commons.platform.DataStorePlatform;
 import com.solexgames.datastore.commons.platform.DataStorePlatforms;
@@ -29,9 +30,7 @@ public class TestApplication implements DataStorePlatform {
             .serializeNulls()
             .create();
 
-    private StorageLayerController storageLayerController;
-
-    private RedisStorageLayer<TestObject> layer;
+    private final StorageLayerController storageLayerController = new StorageLayerController();
 
     {
         DataStorePlatforms.setCurrent(this);
@@ -55,12 +54,15 @@ public class TestApplication implements DataStorePlatform {
                 final String[] commandArgs = command.split(" ");
                 final long startTime = System.currentTimeMillis();
 
+                final AbstractStorageLayer<String, TestObject> storageLayerControllerLayer =
+                        application.getStorageLayerController().getLayer("hello", TestObject.class);
+
                 switch (commandArgs[0]) {
                     case "save":
                         if (commandArgs.length == 3) {
                             final TestObject testObject = new TestObject(commandArgs[2]);
 
-                            application.getLayer().saveEntry(commandArgs[1], testObject).whenComplete((unused, throwable) -> {
+                            storageLayerControllerLayer.saveEntry(commandArgs[1], testObject).whenComplete((unused, throwable) -> {
                                 System.out.println("saved entry!");
 
                                 System.out.println("Took " + (System.currentTimeMillis() - startTime) + "ms to run this jedis command.");
@@ -71,7 +73,7 @@ public class TestApplication implements DataStorePlatform {
                         break;
                     case "fetch":
                         if (commandArgs.length == 2) {
-                            application.getLayer().fetchEntryByKey(commandArgs[1]).whenComplete((testObject1, throwable) -> {
+                            storageLayerControllerLayer.fetchEntryByKey(commandArgs[1]).whenComplete((testObject1, throwable) -> {
                                 if (testObject1 != null) {
                                     System.out.println("fetched entry! result: " + testObject1.getTest());
                                 } else {
@@ -85,7 +87,7 @@ public class TestApplication implements DataStorePlatform {
                         }
                         break;
                     case "fetchall":
-                        application.getLayer().fetchAllEntries().whenComplete((entries, throwable) -> {
+                        storageLayerControllerLayer.fetchAllEntries().whenComplete((entries, throwable) -> {
                             if (entries == null || entries.isEmpty()) {
                                 System.out.println("There aren't any entries!");
                             } else {
@@ -110,12 +112,18 @@ public class TestApplication implements DataStorePlatform {
                 "127.0.0.1", 6379,
                 false, ""
         );
-
-        this.layer = testClassRedisStorageBuilder
+        final RedisStorageLayer<TestObject> testObjectRedisStorageLayer = testClassRedisStorageBuilder
                 .setSection("datastore_test")
                 .setTClass(TestObject.class)
                 .setJedisSettings(jedisSettings)
                 .build();
+
+        this.storageLayerController.registerLayer("hello", testObjectRedisStorageLayer);
+
+        final AbstractStorageLayer<String, TestObject> storageLayerControllerLayer =
+                this.storageLayerController.getLayer("hello", TestObject.class);
+
+        System.out.println("fromMap=" + storageLayerControllerLayer);
 
         this.getLogger().info("Initialized redis storage layer, now waiting for commands...");
     }
