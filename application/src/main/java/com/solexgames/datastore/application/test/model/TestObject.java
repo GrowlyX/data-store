@@ -1,4 +1,4 @@
-package com.solexgames.datastore.application.test;
+package com.solexgames.datastore.application.test.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

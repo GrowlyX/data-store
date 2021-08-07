@@ -18,8 +18,6 @@ public class NoAuthRedisConnection extends RedisConnection {
     private final String address;
     private final Integer port;
 
-    @Override
-    public String getPassword() {
-        return null;
-    }
+    private final String password = null;
+
 }

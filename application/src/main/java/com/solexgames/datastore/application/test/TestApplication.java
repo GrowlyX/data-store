@@ -2,13 +2,13 @@ package com.solexgames.datastore.application.test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.solexgames.datastore.application.test.model.TestObject;
 import com.solexgames.datastore.commons.constants.ConsoleColor;
 import com.solexgames.datastore.commons.layer.AbstractStorageLayer;
 import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
 import com.solexgames.datastore.commons.logger.ConsoleLogger;
 import com.solexgames.datastore.commons.logger.impl.SimpleConsoleLogger;
 import com.solexgames.datastore.commons.platform.DataStorePlatform;
-import com.solexgames.datastore.commons.platform.controller.StorageLayerController;
 import com.solexgames.datastore.commons.connection.impl.RedisConnection;
 import com.solexgames.datastore.commons.connection.impl.redis.NoAuthRedisConnection;
 import com.solexgames.datastore.commons.storage.impl.RedisStorageBuilder;
@@ -19,7 +19,6 @@ import lombok.SneakyThrows;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 /**
  * @author GrowlyX
@@ -115,14 +114,6 @@ public class TestApplication extends DataStorePlatform {
                 .build();
 
         this.getStorageLayerController().registerLayer("hello", testObjectRedisStorageLayer);
-
-        final AbstractStorageLayer<String, TestObject> storageLayerControllerLayer =
-                this.getStorageLayerController().getLayer("hello", TestObject.class);
-        final TestObject testObject = new TestObject("test");
-
-        storageLayerControllerLayer.saveEntry("testing", testObject).whenComplete((unused, throwable) -> {
-           this.getLogger().log(ConsoleColor.GREEN + "The layer fetched from the storage layer worked.");
-        });
 
         this.getLogger().log(ConsoleColor.YELLOW + "Initialized redis storage layer, now waiting for commands...");
     }
