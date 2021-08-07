@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * @author GrowlyX
  * @since 8/6/2021
+ * <p>
+ * Forms a jedis pool without authentication.
  */
 
 @Getter

@@ -1,6 +1,6 @@
 package com.solexgames.datastore.commons.storage.impl;
 
-import com.google.common.base.Preconditions;
+import com.solexgames.datastore.commons.guava.Preconditions;
 import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
 import com.solexgames.datastore.commons.connection.impl.RedisConnection;
 import com.solexgames.datastore.commons.storage.StorageBuilder;

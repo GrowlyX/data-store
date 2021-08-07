@@ -1,5 +1,8 @@
 package com.solexgames.datastore.commons.platform;
 
+import com.solexgames.datastore.commons.logger.ConsoleLogger;
+import com.solexgames.datastore.commons.platform.controller.StorageLayerController;
+
 import java.util.logging.Logger;
 
 /**
@@ -7,8 +10,28 @@ import java.util.logging.Logger;
  * @since 8/4/2021
  */
 
-public interface DataStorePlatform {
+public abstract class DataStorePlatform {
 
-    Logger getLogger();
+    private static DataStorePlatform CURRENT;
+
+    private final StorageLayerController storageLayerController = new StorageLayerController();
+
+    public DataStorePlatform() {
+        DataStorePlatform.setCurrent(this);
+    }
+
+    public abstract ConsoleLogger getLogger();
+
+    public StorageLayerController getStorageLayerController() {
+        return this.storageLayerController;
+    }
+
+    public static DataStorePlatform current() {
+        return CURRENT;
+    }
+
+    public static void setCurrent(DataStorePlatform platform) {
+        DataStorePlatform.CURRENT = platform;
+    }
 
 }

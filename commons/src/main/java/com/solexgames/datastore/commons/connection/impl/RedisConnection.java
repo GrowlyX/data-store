@@ -4,7 +4,6 @@ import com.solexgames.datastore.commons.connection.Connection;
 import lombok.Getter;
 import redis.clients.jedis.JedisPool;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 /**
@@ -15,16 +14,22 @@ import java.util.Optional;
 @Getter
 public abstract class RedisConnection implements Connection<JedisPool> {
 
-    public Optional<String> getSafePassword() {
-        return Optional.of(this.getPassword());
-    }
-
     @Override
     public JedisPool getConnection() {
         return new JedisPool(
                 this.getAddress(),
                 this.getPort()
         );
+    }
+
+    /**
+     * Returns the password in optional form
+     * just in-case the password provided is null.
+     *
+     * @return an {@link Optional} of a string
+     */
+    public Optional<String> getSafePassword() {
+        return Optional.of(this.getPassword());
     }
 
     public abstract String getAddress();

@@ -7,6 +7,11 @@ package com.solexgames.datastore.commons.connection;
 
 public interface Connection<T> {
 
+    /**
+     * A connection object that the bound layer type can use.
+     *
+     * @return the connection object which is of type {@link T}
+     */
     T getConnection();
 
 }

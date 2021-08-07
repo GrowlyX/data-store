@@ -10,6 +10,12 @@ package com.solexgames.datastore.commons.storage;
 
 public interface StorageBuilder<T> {
 
+    /**
+     * Builds the {@link T} object using the provided
+     * data given from the builder.
+     *
+     * @return a {@link T} instance
+     */
     T build();
 
 }

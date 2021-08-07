@@ -28,7 +28,7 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
     private final RedisConnection redisConnection;
 
     private final String section;
-    private final Class<T> tClass;
+    private final Class<T> type;
 
     /**
      * Creates a new cached storage layer in redis
@@ -44,7 +44,7 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
             final String section, final Class<T> tClass
     ) {
         this.section = section;
-        this.tClass = tClass;
+        this.type = tClass;
         this.redisConnection = redisConnection;
 
         this.serializable = new GsonSerializable<>(tClass);
@@ -109,13 +109,8 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
     }
 
     @Override
-    public String getInternalId() {
-        return "redis";
-    }
-
-    @Override
     public Class<T> getType() {
-        return this.tClass;
+        return this.type;
     }
 
     public void runCommand(Consumer<Jedis> consumer) {
