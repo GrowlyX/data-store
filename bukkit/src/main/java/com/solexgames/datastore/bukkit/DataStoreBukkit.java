@@ -4,7 +4,6 @@ import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
 import com.solexgames.datastore.commons.platform.DataStorePlatform;
 import com.solexgames.datastore.commons.platform.DataStorePlatforms;
 import com.solexgames.datastore.commons.platform.controller.StorageLayerController;
-import com.solexgames.datastore.commons.settings.JedisSettings;
 import com.solexgames.datastore.commons.storage.impl.RedisStorageBuilder;
 import lombok.Getter;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
@@ -27,37 +26,6 @@ public final class DataStoreBukkit extends ExtendedJavaPlugin implements DataSto
         instance = this;
 
         DataStorePlatforms.setCurrent(this);
-
-        this.test();
-    }
-
-    private void test() {
-        final RedisStorageBuilder<DataStoreBukkit> testClassRedisStorageBuilder = new RedisStorageBuilder<>();
-        final RedisStorageLayer<DataStoreBukkit> storageLayer = testClassRedisStorageBuilder
-                .setSection("some random section")
-                .setJedisSettings(new JedisSettings(
-                        "127.0.0.1",
-                        6379,
-                        false,
-                        ""
-                )).build();
-
-        storageLayer.saveEntry("test", this).whenComplete((unused, throwable) -> {
-            if (throwable != null) {
-                throwable.printStackTrace();
-            }
-
-            System.out.println("the save entry method was ran!");
-        });
-
-
-        storageLayer.deleteEntry("test").whenComplete((unused, throwable) -> {
-            if (throwable != null) {
-                throwable.printStackTrace();
-            }
-
-            System.out.println("the delete entry method was ran!");
-        });
     }
 
     @Override

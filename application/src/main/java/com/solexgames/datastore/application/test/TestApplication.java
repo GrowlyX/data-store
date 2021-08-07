@@ -7,7 +7,8 @@ import com.solexgames.datastore.commons.layer.impl.RedisStorageLayer;
 import com.solexgames.datastore.commons.platform.DataStorePlatform;
 import com.solexgames.datastore.commons.platform.DataStorePlatforms;
 import com.solexgames.datastore.commons.platform.controller.StorageLayerController;
-import com.solexgames.datastore.commons.settings.JedisSettings;
+import com.solexgames.datastore.commons.connection.impl.RedisConnection;
+import com.solexgames.datastore.commons.connection.impl.redis.NoAuthRedisConnection;
 import com.solexgames.datastore.commons.storage.impl.RedisStorageBuilder;
 import lombok.Getter;
 import lombok.Setter;
@@ -107,23 +108,23 @@ public class TestApplication implements DataStorePlatform {
     }
 
     private void initialize() {
+        final RedisConnection noAuthRedisConnection = new NoAuthRedisConnection("127.0.0.1", 6379);
         final RedisStorageBuilder<TestObject> testClassRedisStorageBuilder = new RedisStorageBuilder<>();
-        final JedisSettings jedisSettings = new JedisSettings(
-                "127.0.0.1", 6379,
-                false, ""
-        );
         final RedisStorageLayer<TestObject> testObjectRedisStorageLayer = testClassRedisStorageBuilder
                 .setSection("datastore_test")
-                .setTClass(TestObject.class)
-                .setJedisSettings(jedisSettings)
+                .setType(TestObject.class)
+                .setConnection(noAuthRedisConnection)
                 .build();
 
         this.storageLayerController.registerLayer("hello", testObjectRedisStorageLayer);
 
         final AbstractStorageLayer<String, TestObject> storageLayerControllerLayer =
                 this.storageLayerController.getLayer("hello", TestObject.class);
+        final TestObject testObject = new TestObject("test");
 
-        System.out.println("fromMap=" + storageLayerControllerLayer);
+        storageLayerControllerLayer.saveEntry("testing", testObject).whenComplete((unused, throwable) -> {
+           this.getLogger().info("The layer fetched from the storage layer worked.");
+        });
 
         this.getLogger().info("Initialized redis storage layer, now waiting for commands...");
     }

@@ -2,13 +2,11 @@ package com.solexgames.datastore.commons.layer.impl;
 
 import com.solexgames.datastore.commons.layer.AbstractStorageLayer;
 import com.solexgames.datastore.commons.serializable.impl.GsonSerializable;
-import com.solexgames.datastore.commons.settings.JedisSettings;
+import com.solexgames.datastore.commons.connection.impl.RedisConnection;
+import com.solexgames.datastore.commons.connection.impl.redis.AuthRedisConnection;
 import lombok.Getter;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -27,32 +25,27 @@ import java.util.function.Consumer;
 public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
     private final GsonSerializable<T> serializable;
-
-    private final JedisPool jedisPool;
-    private final JedisSettings jedisSettings;
+    private final RedisConnection redisConnection;
 
     private final String section;
-
     private final Class<T> tClass;
 
     /**
      * Creates a new cached storage layer in redis
      *
-     * @param jedisPool Jedis pool to get the resource from
-     * @param jedisSettings Authentication settings
+     * @param redisConnection {@link RedisConnection} holding the jedis connection
      * @param section Channel/field to use
      * @param tClass Class to use for {@link GsonSerializable}
      *
      * @see GsonSerializable
      */
     public RedisStorageLayer(
-            JedisPool jedisPool, JedisSettings jedisSettings,
-            String section, Class<T> tClass
+            final RedisConnection redisConnection,
+            final String section, final Class<T> tClass
     ) {
-        this.jedisPool = jedisPool;
-        this.jedisSettings = jedisSettings;
         this.section = section;
         this.tClass = tClass;
+        this.redisConnection = redisConnection;
 
         this.serializable = new GsonSerializable<>(tClass);
     }
@@ -126,9 +119,11 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
     }
 
     public void runCommand(Consumer<Jedis> consumer) {
-        try (final Jedis jedis = this.jedisPool.getResource()) {
-            if (this.jedisSettings.isAuth()) {
-                jedis.auth(this.jedisSettings.getPassword());
+        final RedisConnection connection = this.redisConnection;
+
+        try (final Jedis jedis = connection.getConnection().getResource()) {
+            if (connection instanceof AuthRedisConnection) {
+                connection.getSafePassword().ifPresent(jedis::auth);
             }
 
             consumer.accept(jedis);
