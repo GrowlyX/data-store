@@ -21,6 +21,12 @@ public class RedisStorageBuilder<T> implements StorageBuilder<RedisStorageLayer<
     private Class<T> type;
     private String section;
 
+    /**
+     * Forms a new redis layer with
+     * the provided connection & type.
+     *
+     * @return a {@link RedisStorageLayer} with the data
+     */
     @Override
     public RedisStorageLayer<T> build() {
         Preconditions.checkNotNull(this.connection);

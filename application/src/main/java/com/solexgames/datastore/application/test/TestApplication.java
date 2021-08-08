@@ -37,6 +37,8 @@ public class TestApplication extends DataStorePlatform {
     @Setter
     private static boolean running = true;
 
+    private final TestClass testClass = new TestClass(this);
+
     @SneakyThrows
     public static void main(String[] args) {
         final TestApplication application = new TestApplication();
@@ -56,6 +58,9 @@ public class TestApplication extends DataStorePlatform {
                         application.getStorageLayerController().getLayer("hello", TestObject.class);
 
                 switch (commandArgs[0]) {
+                    case "something":
+                        application.getTestClass().doSomething();
+                        break;
                     case "save":
                         if (commandArgs.length == 3) {
                             final TestObject testObject = new TestObject(commandArgs[2]);

@@ -3,8 +3,6 @@ package com.solexgames.datastore.commons.platform;
 import com.solexgames.datastore.commons.logger.ConsoleLogger;
 import com.solexgames.datastore.commons.platform.controller.StorageLayerController;
 
-import java.util.logging.Logger;
-
 /**
  * @author GrowlyX
  * @since 8/4/2021
