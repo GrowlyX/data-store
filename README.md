@@ -82,3 +82,15 @@ Finally, you can build your `RedisStorageLayer<YourObject>` instance by using th
         // how to fetch the layer
         this.getStorageLayerController().getLayer("hello", RedisStorageLayer.class);
 ```
+
+**Congrats! You've setup your layer! You can now use these awesome methods to store/fetch data from your database!**
+
+```java
+    public CompletableFuture<Void> saveEntry(K k, V v);
+
+    public CompletableFuture<Void> deleteEntry(K k);
+
+    public CompletableFuture<V> fetchEntryByKey(K k);
+
+    public CompletableFuture<Map<K, V>> fetchAllEntries();
+```
