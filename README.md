@@ -1,6 +1,8 @@
 # Data Store
 An easy-to-use wrapper for redis' cached storage system. (support for more data types coming soon)
 
+*Note: This project is unfinished, and the modules bukkit & proxy have nothing in them.*
+
 ## Usage:
 Data Store is very simple, here's an example for the redis wrapper:
 
