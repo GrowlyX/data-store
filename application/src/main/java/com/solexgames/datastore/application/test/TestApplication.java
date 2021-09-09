@@ -58,7 +58,7 @@ public class TestApplication extends DataStorePlatform {
                         application.getStorageLayerController().getLayer("hello", TestObject.class);
 
                 switch (commandArgs[0]) {
-                    case "something":
+                    case "something":let
                         application.getTestClass().doSomething();
                         break;
                     case "save":

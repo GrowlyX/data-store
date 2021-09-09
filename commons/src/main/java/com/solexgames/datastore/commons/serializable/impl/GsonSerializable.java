@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GsonSerializable<T> implements Serializable<T, String> {
 
-    public final Gson gson = new GsonBuilder()
+    public Gson gson = new GsonBuilder()
             .setLongSerializationPolicy(LongSerializationPolicy.STRING)
             .setPrettyPrinting()
             .create();
