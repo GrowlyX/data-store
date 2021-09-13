@@ -121,7 +121,13 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
                 connection.getSafePassword().ifPresent(jedis::auth);
             }
 
-            consumer.accept(jedis);
+            try {
+                consumer.accept(jedis);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            } finally {
+                jedis.close();
+            }
         } catch (Exception exception) {
             exception.printStackTrace();
         }
