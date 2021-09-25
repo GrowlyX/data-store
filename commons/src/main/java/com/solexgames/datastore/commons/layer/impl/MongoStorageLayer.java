@@ -88,15 +88,17 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
     @Override
     public CompletableFuture<Map<String, T>> fetchAllEntries() {
-        return CompletableFuture.supplyAsync(() -> {
-            final Map<String, T> entries = new HashMap<>();
+        return CompletableFuture.supplyAsync(this::fetchAllEntriesSync);
+    }
 
-            for (Document document : this.collection.find()) {
-                entries.put(document.getString("_id"), this.serializable.deserialize(document.toJson()));
-            }
+    public Map<String, T> fetchAllEntriesSync() {
+        final Map<String, T> entries = new HashMap<>();
 
-            return entries;
-        });
+        for (Document document : this.collection.find()) {
+            entries.put(document.getString("_id"), this.serializable.deserialize(document.toJson()));
+        }
+
+        return entries;
     }
 
     public CompletableFuture<Map<String, T>> fetchAllEntriesWithFilter(Bson filter) {

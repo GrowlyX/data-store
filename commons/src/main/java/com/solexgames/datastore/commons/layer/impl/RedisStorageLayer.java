@@ -87,25 +87,27 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
     @Override
     public CompletableFuture<Map<String, T>> fetchAllEntries() {
-        return CompletableFuture.supplyAsync(() -> {
-            final AtomicReference<Map<String, T>> reference = new AtomicReference<>();
+        return CompletableFuture.supplyAsync(this::fetchAllEntriesSync);
+    }
 
-            this.runCommand(jedis -> {
-                final Map<String, String> serializedValue = jedis.hgetAll(this.section);
+    public Map<String, T> fetchAllEntriesSync() {
+        final AtomicReference<Map<String, T>> reference = new AtomicReference<>();
 
-                if (serializedValue != null) {
-                    final Map<String, T> newMap = new LinkedHashMap<>();
+        this.runCommand(jedis -> {
+            final Map<String, String> serializedValue = jedis.hgetAll(this.section);
 
-                    for (final Map.Entry<String, String> entry : serializedValue.entrySet()) {
-                        newMap.put(entry.getKey(), this.serializable.deserialize(entry.getValue()));
-                    }
+            if (serializedValue != null) {
+                final Map<String, T> newMap = new LinkedHashMap<>();
 
-                    reference.set(newMap);
+                for (final Map.Entry<String, String> entry : serializedValue.entrySet()) {
+                    newMap.put(entry.getKey(), this.serializable.deserialize(entry.getValue()));
                 }
-            });
 
-            return reference.get();
+                reference.set(newMap);
+            }
         });
+
+        return reference.get();
     }
 
     @Override
