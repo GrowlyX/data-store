@@ -16,7 +16,6 @@ public class GsonSerializable<T> implements Serializable<T, String> {
 
     public Gson gson = new GsonBuilder()
             .setLongSerializationPolicy(LongSerializationPolicy.STRING)
-            .setPrettyPrinting()
             .create();
 
     private final Class<T> clazz;

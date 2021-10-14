@@ -1,7 +1,9 @@
 package com.solexgames.datastore.commons.layer.impl;
 
 import com.google.gson.Gson;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.solexgames.datastore.commons.connection.impl.MongoConnection;
@@ -11,15 +13,21 @@ import com.solexgames.datastore.commons.layer.AbstractStorageLayer;
 import com.solexgames.datastore.commons.serializable.impl.GsonSerializable;
 import lombok.Getter;
 import org.bson.Document;
+import org.bson.codecs.DocumentCodec;
 import org.bson.conversions.Bson;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author GrowlyX
@@ -62,7 +70,10 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
         return CompletableFuture.runAsync(() -> {
             this.collection.updateOne(
                     Filters.eq("_id", s),
-                    new Document("$set", Document.parse(this.serializable.serialize(t))),
+                    new Document(
+                            "$set",
+                            Document.parse(this.serializable.serialize(t))
+                    ),
                     new UpdateOptions().upsert(true)
             );
         });
@@ -75,15 +86,17 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
     @Override
     public CompletableFuture<T> fetchEntryByKey(String s) {
-        return CompletableFuture.supplyAsync(() -> {
-            final Document document = this.collection.find(Filters.eq("_id", s)).first();
+        return CompletableFuture.supplyAsync(() -> this.fetchEntryByKeySync(s));
+    }
 
-            if (document == null) {
-                return null;
-            }
+    public T fetchEntryByKeySync(String s) {
+        final Document document = this.collection.find(Filters.eq("_id", s)).first();
 
-            return this.serializable.deserialize(document.toJson());
-        });
+        if (document == null) {
+            return null;
+        }
+
+        return this.serializable.deserialize(document.toJson());
     }
 
     @Override
@@ -92,7 +105,7 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
     }
 
     public Map<String, T> fetchAllEntriesSync() {
-        final Map<String, T> entries = new HashMap<>();
+        final Map<String, T> entries = new WeakHashMap<>();
 
         for (Document document : this.collection.find()) {
             entries.put(document.getString("_id"), this.serializable.deserialize(document.toJson()));
@@ -103,7 +116,7 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
     public CompletableFuture<Map<String, T>> fetchAllEntriesWithFilter(Bson filter) {
         return CompletableFuture.supplyAsync(() -> {
-            final Map<String, T> entries = new HashMap<>();
+            final Map<String, T> entries = new WeakHashMap<>();
 
             for (Document document : this.collection.find(filter)) {
                 entries.put(document.getString("_id"), this.serializable.deserialize(document.toJson()));

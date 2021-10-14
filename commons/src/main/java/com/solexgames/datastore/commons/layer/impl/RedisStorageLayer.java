@@ -1,14 +1,15 @@
 package com.solexgames.datastore.commons.layer.impl;
 
-import com.solexgames.datastore.commons.layer.AbstractStorageLayer;
-import com.solexgames.datastore.commons.serializable.impl.GsonSerializable;
 import com.solexgames.datastore.commons.connection.impl.RedisConnection;
 import com.solexgames.datastore.commons.connection.impl.redis.AuthRedisConnection;
+import com.solexgames.datastore.commons.layer.AbstractStorageLayer;
+import com.solexgames.datastore.commons.serializable.impl.GsonSerializable;
 import lombok.Getter;
 import redis.clients.jedis.Jedis;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -18,11 +19,11 @@ import java.util.function.Consumer;
  * @since 8/4/2021
  * <p>
  * An easy-to-use object based wrapper
- * for {@link Jedis}'s key-value storage system.
+ * for {@link Jedis}'s key-value caching service.
  */
 
 @Getter
-public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
+public class RedisStorageLayer<T> extends AbstractStorageLayer<String, T>  {
 
     private final GsonSerializable<T> serializable;
     private final RedisConnection redisConnection;
@@ -55,6 +56,7 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
         return CompletableFuture.runAsync(() -> {
             this.runCommand(jedis -> {
                 jedis.hset(this.section, s, this.serializable.serialize(t));
+                jedis.close();
             });
         });
     }
@@ -64,6 +66,7 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
         return CompletableFuture.runAsync(() -> {
             this.runCommand(jedis -> {
                 jedis.hdel(this.section, s);
+                jedis.close();
             });
         });
     }
@@ -79,6 +82,8 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
                 if (serializedValue != null) {
                     reference.set(this.serializable.deserialize(serializedValue));
                 }
+
+                jedis.close();
             });
 
             return reference.get();
@@ -97,7 +102,7 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
             final Map<String, String> serializedValue = jedis.hgetAll(this.section);
 
             if (serializedValue != null) {
-                final Map<String, T> newMap = new LinkedHashMap<>();
+                final Map<String, T> newMap = new WeakHashMap<>();
 
                 for (final Map.Entry<String, String> entry : serializedValue.entrySet()) {
                     newMap.put(entry.getKey(), this.serializable.deserialize(entry.getValue()));
@@ -105,6 +110,8 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
                 reference.set(newMap);
             }
+
+            jedis.close();
         });
 
         return reference.get();
@@ -120,16 +127,14 @@ public class RedisStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
 
         try (final Jedis jedis = connection.getConnection().getResource()) {
             if (connection instanceof AuthRedisConnection) {
-                connection.getSafePassword().ifPresent(jedis::auth);
+                final String password = connection.getPassword();
+
+                if (password != null && !password.isEmpty()) {
+                    jedis.auth(password);
+                }
             }
 
-            try {
-                consumer.accept(jedis);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            } finally {
-                jedis.close();
-            }
+            consumer.accept(jedis);
         } catch (Exception exception) {
             exception.printStackTrace();
         }

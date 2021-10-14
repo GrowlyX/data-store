@@ -14,13 +14,7 @@ import java.util.Optional;
 @Getter
 public abstract class RedisConnection implements Connection<JedisPool> {
 
-    @Override
-    public JedisPool getConnection() {
-        return new JedisPool(
-                this.getAddress(),
-                this.getPort()
-        );
-    }
+    private final JedisPool connection;
 
     /**
      * Returns the password in optional form
@@ -37,5 +31,13 @@ public abstract class RedisConnection implements Connection<JedisPool> {
     public abstract Integer getPort();
 
     public abstract String getPassword();
+
+    {
+
+        connection = new JedisPool(
+                this.getAddress() == null ? "127.0.0.1" : this.getAddress(),
+                this.getPort() == null ? 6379 : this.getPort()
+        );
+    }
 
 }
