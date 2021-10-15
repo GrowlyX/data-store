@@ -13,11 +13,17 @@ import lombok.RequiredArgsConstructor;
 public class UriMongoConnection extends MongoConnection {
 
     private final String uri;
+    
+    private MongoClient client;
+    
+    {
+        this.client = new MongoClient(
+                new MongoClientURI(this.uri)
+        );
+    }
 
     @Override
     public MongoClient getClient() {
-        return new MongoClient(
-                new MongoClientURI(this.uri)
-        );
+        return this.client
     }
 }
