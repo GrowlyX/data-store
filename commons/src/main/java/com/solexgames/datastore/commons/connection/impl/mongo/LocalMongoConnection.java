@@ -8,9 +8,11 @@ import com.solexgames.datastore.commons.connection.impl.MongoConnection;
  * @since 9/8/2021
  */
 public class LocalMongoConnection extends MongoConnection {
+    
+    private final MongoClient client = new MongoClient();
 
     @Override
     public MongoClient getClient() {
-        return new MongoClient();
+        return this.client;
     }
 }
