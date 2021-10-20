@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
  */
 
 @Getter
-public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
+public class MongoStorageLayer<T> extends AbstractStorageLayer<String, T>  {
 
     private final GsonSerializable<T> serializable;
 
@@ -59,7 +59,7 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
                     Filters.eq("_id", s),
                     new Document(
                             "$set",
-                            Document.parse(this.serializable.serialize(t))
+                            Document.parse(serialize(t))
                     ),
                     new UpdateOptions().upsert(true)
             );
@@ -83,7 +83,7 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
             return null;
         }
 
-        return this.serializable.deserialize(document.toJson());
+        return deserialize(document.toJson());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
         final Map<String, T> entries = new WeakHashMap<>();
 
         for (Document document : this.collection.find()) {
-            entries.put(document.getString("_id"), this.serializable.deserialize(document.toJson()));
+            entries.put(document.getString("_id"), deserialize(document.toJson()));
         }
 
         return entries;
@@ -106,11 +106,21 @@ public class MongoStorageLayer<T>  extends AbstractStorageLayer<String, T>  {
             final Map<String, T> entries = new WeakHashMap<>();
 
             for (Document document : this.collection.find(filter)) {
-                entries.put(document.getString("_id"), this.serializable.deserialize(document.toJson()));
+                entries.put(document.getString("_id"), deserialize(document.toJson()));
             }
 
             return entries;
         });
+    }
+
+    public T deserialize(String json)
+    {
+        return this.serializable.deserialize(json);
+    }
+
+    public String serialize(T t)
+    {
+        return this.serializable.serialize(t);
     }
 
     @Override
