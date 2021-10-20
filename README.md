@@ -17,14 +17,6 @@ public class NewTestApplication extends DataStorePlatform {
     public void initalizeLayer() {
         
     }
-
-    /**
-     * the logger type to use for this app
-     */
-    @Override
-    public ConsoleLogger getLogger() {
-        return new SimpleConsoleLogger();
-    }
 }
 ```
 
@@ -96,3 +88,5 @@ Finally, you can build your `RedisStorageLayer<YourObject>` instance by using th
 
     public CompletableFuture<Map<K, V>> fetchAllEntries();
 ```
+
+*Methods to fetch, delete, and fetch all entries synchronously are also available in both Redis and Mongo implementations.*
