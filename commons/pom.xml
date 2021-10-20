@@ -6,7 +6,7 @@
 
     <parent>
         <artifactId>data-store</artifactId>
-        <groupId>com.solexgames</groupId>
+        <groupId>gg.scala</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
