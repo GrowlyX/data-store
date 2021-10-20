@@ -1,10 +1,8 @@
 # Data Store
-An easy-to-use wrapper for redis' cached storage system. (support for more data types coming soon)
-
-*Note: This project is unfinished, and the modules bukkit & proxy have nothing in them.*
+An easy-to-use wrapper for both mongo, and redis' databases.
 
 ## Usage:
-Data Store is very simple, here's an example for the redis wrapper:
+Data Store is very simple. Here is an example for the redis wrapper:
 
 Create your application class, this should extend the `DataStorePlatform` available in the commons module.
 ```java
