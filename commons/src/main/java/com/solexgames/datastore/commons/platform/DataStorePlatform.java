@@ -1,6 +1,5 @@
 package com.solexgames.datastore.commons.platform;
 
-import com.solexgames.datastore.commons.logger.ConsoleLogger;
 import com.solexgames.datastore.commons.platform.controller.StorageLayerController;
 
 /**
@@ -17,8 +16,6 @@ public abstract class DataStorePlatform {
     public DataStorePlatform() {
         DataStorePlatform.setCurrent(this);
     }
-
-    public abstract ConsoleLogger getLogger();
 
     public StorageLayerController getStorageLayerController() {
         return this.storageLayerController;

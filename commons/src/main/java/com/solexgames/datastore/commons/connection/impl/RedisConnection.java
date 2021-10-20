@@ -33,7 +33,6 @@ public abstract class RedisConnection implements Connection<JedisPool> {
     public abstract String getPassword();
 
     {
-
         connection = new JedisPool(
                 this.getAddress() == null ? "127.0.0.1" : this.getAddress(),
                 this.getPort() == null ? 6379 : this.getPort()

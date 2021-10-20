@@ -1,7 +1,6 @@
 package com.solexgames.datastore.commons.connection.impl;
 
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
 import com.solexgames.datastore.commons.connection.Connection;
 
 /**
